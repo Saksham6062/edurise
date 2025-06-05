@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>EduRise – Kids Learning App</title>
+</head>
+<body>
+  <h1>Welcome to EduRise</h1>
+  <p>Download our app to start learning!</p>
+  <a href="app.zip" download>Download App ZIP</a>
+</body>
+</html>
