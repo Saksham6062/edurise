@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Learning Hub</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for a playful look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tone.js for sound effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+
+    <style>
+        /* Custom font for the app */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9ff; /* Light blue background */
+        }
+        .font-fredoka {
+            font-family: 'Fredoka One', cursive;
+        }
+        /* Basic transition for smooth screen changes */
+        .screen {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        .hidden {
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        /* Styling for answer buttons */
+        .answer-btn {
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .answer-btn:hover {
+            transform: translateY(-5px);
+        }
+        .correct-answer {
+            background-color: #22c55e !important; /* Green-500 */
+            color: white;
+            transform: scale(1.05);
+        }
+        .incorrect-answer {
+            background-color: #ef4444 !important; /* Red-500 */
+            color: white;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <!-- Main Container -->
+    <div id="app-container" class="min-h-screen flex flex-col items-center justify-center p-4">
+
+        <!-- Main Menu Screen -->
+        <div id="main-menu" class="screen w-full max-w-2xl text-center">
+            <h1 class="text-5xl md:text-7xl font-fredoka text-blue-600 mb-2">Learning Hub</h1>
+            <p class="text-lg text-gray-500 mb-12">Choose a fun activity!</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Math Card -->
+                <div onclick="showScreen('math-quiz')" class="bg-white p-8 rounded-2xl shadow-lg cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="text-6xl mb-4">➕</div>
+                    <h2 class="text-2xl font-bold font-fredoka text-orange-500">Math Quiz</h2>
+                </div>
+                <!-- Spelling Card -->
+                <div onclick="showScreen('spelling-game')" class="bg-white p-8 rounded-2xl shadow-lg cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="text-6xl mb-4">✏️</div>
+                    <h2 class="text-2xl font-bold font-fredoka text-green-500">Spelling Bee</h2>
+                </div>
+                <!-- Fun Facts Card -->
+                <div onclick="showScreen('fun-facts')" class="bg-white p-8 rounded-2xl shadow-lg cursor-pointer hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="text-6xl mb-4">💡</div>
+                    <h2 class="text-2xl font-bold font-fredoka text-purple-500">Fun Facts</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Math Quiz Screen -->
+        <div id="math-quiz" class="screen hidden w-full max-w-lg text-center">
+            <h1 class="text-4xl md:text-5xl font-fredoka text-orange-500 mb-8">Math Quiz!</h1>
+            <div class="bg-white p-8 rounded-2xl shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">Question:</h2>
+                    <div class="text-xl font-bold bg-orange-100 text-orange-600 px-4 py-1 rounded-full">Score: <span id="score">0</span></div>
+                </div>
+                <p id="math-question" class="text-5xl font-bold mb-8 h-16"></p>
+                <div id="answer-options" class="grid grid-cols-2 gap-4">
+                    <!-- Answer buttons will be generated here -->
+                </div>
+            </div>
+            <button onclick="showScreen('main-menu')" class="mt-8 bg-blue-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all">Back to Menu</button>
+        </div>
+
+        <!-- Spelling Game Screen -->
+        <div id="spelling-game" class="screen hidden w-full max-w-lg text-center">
+            <h1 class="text-4xl md:text-5xl font-fredoka text-green-500 mb-8">Spelling Bee!</h1>
+            <div class="bg-white p-8 rounded-2xl shadow-xl">
+                <p class="text-xl font-semibold mb-4">Spell the word for the picture:</p>
+                <img id="spelling-image" src="" alt="Spelling object" class="w-full h-48 object-contain bg-gray-100 rounded-lg mb-6 mx-auto">
+                <input type="text" id="spelling-input" class="w-full text-2xl p-4 border-2 border-gray-300 rounded-lg text-center focus:border-green-500 focus:ring-green-500" placeholder="Type your answer...">
+                <p id="spelling-feedback" class="mt-4 h-6 text-lg font-semibold"></p>
+            </div>
+            <div class="mt-8 flex justify-center gap-4">
+                <button onclick="showScreen('main-menu')" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all">Back to Menu</button>
+                <button onclick="checkSpelling()" class="bg-green-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-green-600 transition-all">Check Answer</button>
+            </div>
+        </div>
+
+        <!-- Fun Facts Screen -->
+        <div id="fun-facts" class="screen hidden w-full max-w-lg text-center">
+            <h1 class="text-4xl md:text-5xl font-fredoka text-purple-500 mb-8">Did You Know?</h1>
+            <div class="bg-white p-8 rounded-2xl shadow-xl min-h-[250px] flex items-center justify-center">
+                <p id="fact-text" class="text-2xl md:text-3xl font-semibold leading-relaxed"></p>
+            </div>
+            <div class="mt-8 flex justify-center gap-4">
+                <button onclick="showScreen('main-menu')" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-blue-600 transition-all">Back to Menu</button>
+                <button onclick="showNewFact()" class="bg-purple-500 text-white font-bold py-3 px-6 rounded-xl hover:bg-purple-600 transition-all">Show New Fact</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Sound Effects Setup (using Tone.js) ---
+        // Create synths for sound effects. Using simple synths to avoid external files.
+        const correctSound = new Tone.Synth({
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.2 }
+        }).toDestination();
+
+        const incorrectSound = new Tone.Synth({
+            oscillator: { type: 'square' },
+            envelope: { attack: 0.01, decay: 0.4, sustain: 0.1, release: 0.2 }
+        }).toDestination();
+        
+        // --- App State and Data ---
+        let currentScreen = 'main-menu';
+        let score = 0;
+        let currentMathAnswer = 0;
+        
+        const spellingWords = [
+            { word: 'apple', imageText: 'An Apple' },
+            { word: 'ball', imageText: 'A Ball' },
+            { word: 'cat', imageText: 'A Cat' },
+            { word: 'dog', imageText: 'A Dog' },
+            { word: 'sun', imageText: 'The Sun' },
+            { word: 'tree', imageText: 'A Tree' },
+            { word: 'star', imageText: 'A Star' },
+        ];
+        let currentSpellingIndex = 0;
+
+        const funFacts = [
+            "A group of owls is called a parliament.",
+            "Honey never spoils.",
+            "Octopuses have three hearts.",
+            "A snail can sleep for three years.",
+            "Butterflies taste with their feet.",
+            "The heart of a shrimp is in its head.",
+            "It is impossible for most people to lick their own elbow.",
+            "A crocodile cannot stick its tongue out.",
+        ];
+        
+        // --- Core App Logic ---
+        
+        /**
+         * Hides all screens and shows the one with the specified ID.
+         * @param {string} screenId The ID of the screen to show.
+         */
+        function showScreen(screenId) {
+            // Start audio context on user interaction
+            Tone.start();
+
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.add('hidden');
+            });
+            
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.remove('hidden');
+                currentScreen = screenId;
+                
+                // Initialize the screen when it's shown
+                if (screenId === 'math-quiz') {
+                    startMathQuiz();
+                } else if (screenId === 'spelling-game') {
+                    startSpellingGame();
+                } else if (screenId === 'fun-facts') {
+                    showNewFact();
+                }
+            }
+        }
+
+        // --- Math Quiz Logic ---
+        
+        /**
+         * Starts the math quiz by generating a new question.
+         */
+        function startMathQuiz() {
+            score = 0;
+            document.getElementById('score').innerText = score;
+            generateMathQuestion();
+        }
+
+        /**
+         * Generates a new addition problem and populates answer choices.
+         */
+        function generateMathQuestion() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            currentMathAnswer = num1 + num2;
+            
+            document.getElementById('math-question').innerText = `${num1} + ${num2} = ?`;
+            
+            const answers = new Set([currentMathAnswer]);
+            while (answers.size < 4) {
+                const randomAnswer = Math.floor(Math.random() * 20) + 1;
+                if (randomAnswer > 0) {
+                   answers.add(randomAnswer);
+                }
+            }
+            
+            const shuffledAnswers = Array.from(answers).sort(() => Math.random() - 0.5);
+            
+            const answerContainer = document.getElementById('answer-options');
+            answerContainer.innerHTML = '';
+            shuffledAnswers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer;
+                button.classList.add('answer-btn', 'bg-white', 'p-4', 'text-2xl', 'font-bold', 'rounded-lg', 'shadow-md', 'border', 'border-gray-200', 'hover:bg-blue-100');
+                button.onclick = () => checkMathAnswer(answer, button);
+                answerContainer.appendChild(button);
+            });
+        }
+
+        /**
+         * Checks the selected math answer, provides feedback, and loads a new question.
+         * @param {number} selectedAnswer The answer the user clicked.
+         * @param {HTMLElement} buttonElement The button element that was clicked.
+         */
+        function checkMathAnswer(selectedAnswer, buttonElement) {
+            const allButtons = document.querySelectorAll('#answer-options button');
+            allButtons.forEach(btn => btn.disabled = true); // Disable buttons during feedback
+
+            if (selectedAnswer === currentMathAnswer) {
+                score++;
+                document.getElementById('score').innerText = score;
+                buttonElement.classList.add('correct-answer');
+                correctSound.triggerAttackRelease('C4', '8n');
+            } else {
+                buttonElement.classList.add('incorrect-answer');
+                incorrectSound.triggerAttackRelease('C2', '8n');
+                // Highlight the correct answer
+                allButtons.forEach(btn => {
+                    if (parseInt(btn.innerText) === currentMathAnswer) {
+                        btn.classList.add('correct-answer');
+                    }
+                });
+            }
+            
+            setTimeout(() => {
+                generateMathQuestion();
+            }, 1500); // Wait 1.5 seconds before the next question
+        }
+
+        // --- Spelling Game Logic ---
+
+        /**
+         * Initializes the spelling game with the first word.
+         */
+        function startSpellingGame() {
+            currentSpellingIndex = 0;
+            loadSpellingWord();
+        }
+        
+        /**
+         * Loads the current spelling word, image, and clears previous state.
+         */
+        function loadSpellingWord() {
+            const wordData = spellingWords[currentSpellingIndex];
+            // Using a placeholder service for images
+            document.getElementById('spelling-image').src = `https://placehold.co/400x200/e2e8f0/334155?text=${wordData.imageText}`;
+            document.getElementById('spelling-image').alt = wordData.imageText;
+            document.getElementById('spelling-input').value = '';
+            document.getElementById('spelling-input').disabled = false;
+            document.getElementById('spelling-feedback').innerText = '';
+            document.getElementById('spelling-feedback').classList.remove('text-green-600', 'text-red-600');
+        }
+
+        /**
+         * Checks if the user's typed spelling is correct.
+         */
+        function checkSpelling() {
+            const inputElement = document.getElementById('spelling-input');
+            const feedbackElement = document.getElementById('spelling-feedback');
+            const userAnswer = inputElement.value.trim().toLowerCase();
+            const correctAnswer = spellingWords[currentSpellingIndex].word;
+
+            if (userAnswer === correctAnswer) {
+                feedbackElement.innerText = 'Correct! Well done!';
+                feedbackElement.className = 'mt-4 h-6 text-lg font-semibold text-green-600';
+                correctSound.triggerAttackRelease('E4', '8n');
+                inputElement.disabled = true;
+
+                setTimeout(() => {
+                    currentSpellingIndex = (currentSpellingIndex + 1) % spellingWords.length;
+                    loadSpellingWord();
+                }, 2000); // Move to next word after 2 seconds
+            } else {
+                feedbackElement.innerText = 'Not quite, try again!';
+                feedbackElement.className = 'mt-4 h-6 text-lg font-semibold text-red-600';
+                incorrectSound.triggerAttackRelease('C2', '8n');
+            }
+        }
+
+        // --- Fun Facts Logic ---
+
+        /**
+         * Displays a new random fun fact.
+         */
+        function showNewFact() {
+            const factIndex = Math.floor(Math.random() * funFacts.length);
+            document.getElementById('fact-text').innerText = funFacts[factIndex];
+        }
+
+        // --- Initial Load ---
+        // Show the main menu when the page first loads.
+        window.onload = () => {
+            showScreen('main-menu');
+        };
+
+    </script>
+</body>
+</html>
