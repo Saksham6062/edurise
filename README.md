@@ -1,1 +1,1 @@
-# edurise.github.io
+# edurise
